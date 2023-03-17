@@ -13,9 +13,27 @@ def handler_exit(args):
 
 def handler_add(args):
     contacts[args[0]] = args[1]
+    return "contact was added succesfully"
+
+def handler_change(args):
+    contacts[args[0]] = args[1]
+    return "contact was changed seccesfully"
+
+def handler_phone(args):
+    return contacts[args[0]]
+
+def handler_show_all(args):
+    message = "Here are all saved contacts:\n"
+    for c in contacts:
+        message += c + ': ' + contacts[c] + '\n'
+    return message
 
 handlers = {"hello": handler_greetings,
-            "exit": handler_exit}
+            "exit": handler_exit,
+            "add": handler_add,
+            "change": handler_change,
+            "phone": handler_phone,
+            "show all": handler_show_all}
 #key - command, value - handler.
 
 #parcer
