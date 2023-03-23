@@ -90,7 +90,7 @@ def main():
         if command:
             print(command[0](command[1:]))
         else:
-            print("unknown command") #I should change this message. Later.
+            print("unknown command")
 
 if __name__ == '__main__':
     main()
