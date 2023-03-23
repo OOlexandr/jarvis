@@ -1,27 +1,66 @@
 continuing = True
 contacts = {}
 
+#error handler. I didn't come up with a better way to do it
+def error_handler(func):
+    def inner(args):
+        try:
+            return func(args)
+        except KeyError:
+            if func is handler_add:
+                return "The user is already saved"
+            else:
+                return "The user is not in the list"
+        except ValueError:
+            pass
+        except IndexError:
+            if func is handler_phone:
+                return "Please enter user name"
+            else:
+                return "Please enter user name and number"
+    return inner
+
+def is_phone_number(string):
+    string = string.strip()
+    if string[0] == '+':
+        string = string[1:]
+    string = string.replace(' ', '').replace('(', '').replace(')', '').replace('-',  '')
+
 #handlers
 #every handler acceptslist of arguments and returns message to be printed to command line
+@error_handler
 def handler_greetings(args):
     return "How can I help you?"
 
+@error_handler
 def handler_exit(args):
     global continuing
     continuing = False
     return "Good bye!"
 
+@error_handler
 def handler_add(args):
+    if args[0] in contacts:
+        raise KeyError
+    if not is_phone_number(args[1]):
+        raise ValueError
     contacts[args[0]] = args[1]
-    return "contact was added succesfully"
+    return "Contact was added succesfully"
 
+@error_handler
 def handler_change(args):
+    if not args[0] in contacts:
+        raise KeyError
+    if not is_phone_number(args[1]):
+        raise ValueError
     contacts[args[0]] = args[1]
-    return "contact was changed seccesfully"
+    return "Contact was changed seccesfully"
 
+@error_handler
 def handler_phone(args):
     return contacts[args[0]]
 
+@error_handler
 def handler_show_all(args):
     message = "Here are all saved contacts:\n"
     for c in contacts:
@@ -40,7 +79,7 @@ handlers = {"hello": handler_greetings,
 def parce(command):
     #returns list. first element - handler and the rest are arguments
     #returns None if command is not recognized
-    command = command.strip()
+    command = command.strip().lower()
     parced_command = []
     for handler in handlers:
         if command.startswith(handler):
