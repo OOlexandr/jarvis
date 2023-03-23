@@ -7,24 +7,19 @@ def error_handler(func):
         try:
             return func(args)
         except KeyError:
-            if func is handler_add:
-                return "The user is already saved"
-            else:
-                return "The user is not in the list"
+            return "The user is not in the list"
         except ValueError:
-            pass
+            return "Number is invalid"
         except IndexError:
-            if func is handler_phone:
-                return "Please enter user name"
-            else:
-                return "Please enter user name and number"
+            return "Please enter user name and number"
     return inner
 
 def is_phone_number(string):
     string = string.strip()
     if string[0] == '+':
         string = string[1:]
-    string = string.replace(' ', '').replace('(', '').replace(')', '').replace('-',  '')
+    string = string.replace('(', '').replace(')', '').replace('-',  '')
+    return string.isdigit()
 
 #handlers
 #every handler acceptslist of arguments and returns message to be printed to command line
@@ -40,8 +35,6 @@ def handler_exit(args):
 
 @error_handler
 def handler_add(args):
-    if args[0] in contacts:
-        raise KeyError
     if not is_phone_number(args[1]):
         raise ValueError
     contacts[args[0]] = args[1]
