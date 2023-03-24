@@ -1,4 +1,3 @@
-continuing = True
 contacts = {}
 
 #error handler. I didn't come up with a better way to do it
@@ -29,8 +28,6 @@ def handler_greetings(args):
 
 @error_handler
 def handler_exit(args):
-    global continuing
-    continuing = False
     return "Good bye!"
 
 @error_handler
@@ -85,10 +82,13 @@ def parce(command):
     return None
 
 def main():
-    while continuing:
+    while True:
         command = parce(input())
         if command:
-            print(command[0](command[1:]))
+            result = command[0](command[1:])
+            print(result)
+            if result == "Good bye!":
+                return
         else:
             print("unknown command")
 
