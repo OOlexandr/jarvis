@@ -58,6 +58,8 @@ def handler_show_all(args):
     return message
 
 handlers = {"hello": handler_greetings,
+            "good bye": handler_exit,
+            "close": handler_exit,
             "exit": handler_exit,
             "add": handler_add,
             "change": handler_change,
