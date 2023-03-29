@@ -1,4 +1,6 @@
-contacts = {}
+import address_book
+
+contacts = address_book.AddressBook()
 
 #error handler. I didn't come up with a better way to do it
 def error_handler(func):
@@ -6,19 +8,18 @@ def error_handler(func):
         try:
             return func(args)
         except KeyError:
-            return "The user is not in the list"
+            return "The user is not in the address book"
         except ValueError:
             return "Number is invalid"
         except IndexError:
             return "Please enter user name and number"
+        except address_book.RecordAlreadyExists:
+            return "The user is already in the address book"
+        except address_book.PhoneAlreadyExistsError:
+            return "The phone already exists"
+        except address_book.PhoneNotFoundError:
+            return "The phone is not found"
     return inner
-
-def is_phone_number(string):
-    string = string.strip()
-    if string[0] == '+':
-        string = string[1:]
-    string = string.replace('(', '').replace(')', '').replace('-',  '')
-    return string.isdigit()
 
 #handlers
 #every handler acceptslist of arguments and returns message to be printed to command line
@@ -32,29 +33,33 @@ def handler_exit(args):
 
 @error_handler
 def handler_add(args):
-    if not is_phone_number(args[1]):
-        raise ValueError
-    contacts[args[0]] = args[1]
+    name = args[0]
+    if args[1:]:
+        contacts.add_record(name, args[1])
+    else:
+        contacts.add_record(name)
     return "Contact was added succesfully"
 
 @error_handler
 def handler_change(args):
-    if not args[0] in contacts:
-        raise KeyError
-    if not is_phone_number(args[1]):
-        raise ValueError
-    contacts[args[0]] = args[1]
+    contacts.change_phone(args[0], args[1], args[2])
     return "Contact was changed seccesfully"
 
 @error_handler
 def handler_phone(args):
-    return contacts[args[0]]
+    contact = contacts.get_record(args[0])
+    result = contact["name"] + ':'
+    for phone in contact["phones"]:
+        result += " " + phone.value
+    return result
 
 @error_handler
 def handler_show_all(args):
-    message = "Here are all saved contacts:\n"
+    if not contacts:
+        return "Contacts list is currently empty"
+    message = "Here are all saved contacts:"
     for c in contacts:
-        message += c + ': ' + contacts[c] + '\n'
+        message += '\n' + handler_phone([c])
     return message
 
 handlers = {"hello": handler_greetings,
