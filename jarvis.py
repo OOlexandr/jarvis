@@ -2,7 +2,6 @@ import address_book
 
 contacts = address_book.AddressBook()
 
-#error handler. I didn't come up with a better way to do it
 def error_handler(func):
     def inner(args):
         try:
