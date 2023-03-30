@@ -34,21 +34,31 @@ def handler_exit(args):
 def handler_add(args):
     name = args[0]
     if args[1:]:
-        contacts.add_record(name, args[1])
+        #if adding phone
+        if name in contacts:
+            #and contact exists - add new phone
+            contacts[name].add_phone(args[1])
+        else:
+            contacts[name] = address_book.Record(name, args[1])
     else:
-        contacts.add_record(name)
+        #if adding a record without a phone
+        if name in contacts:
+            #and contact exists - raise exception
+            raise address_book.RecordAlreadyExists
+        else:
+            contacts[name] = address_book.Record(name)
     return "Contact was added succesfully"
 
 @error_handler
 def handler_change(args):
-    contacts.change_phone(args[0], args[1], args[2])
+    contacts[args[0]].change_phone(args[1], args[2])
     return "Contact was changed seccesfully"
 
 @error_handler
 def handler_phone(args):
-    contact = contacts.get_record(args[0])
-    result = contact["name"] + ':'
-    for phone in contact["phones"]:
+    contact = contacts[args[0]]
+    result = contact.name.value + ':'
+    for phone in contact.phones:
         result += " " + phone.value
     return result
 

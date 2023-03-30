@@ -19,9 +19,6 @@ def is_phone_number(string):
 class Field:
     def __init__(self, value):
         self.value = value
-    
-    def change_value(self, value):
-        self.value = value
 
 class Name(Field):
     pass
@@ -40,18 +37,11 @@ class Phone(Field):
             raise ValueError
 
 class Record(Field):
-    def __init__(self, name):
+    def __init__(self, name, phone = ''):
         self.name = Name(name)
         self.phones = []
-    
-    def __init__(self, name, phones):
-        self.name = Name(name)
-        self.phones = []
-        if type(phones) == list:
-            for i in phones:
-                self.phones.append(Phone(i))
-        else:
-            self.phones.append(Phone(phones))
+        if phone:
+            self.phones.append(Phone(phone))
     
     def add_phone(self, phone):
         for i in self.phones:
@@ -63,7 +53,8 @@ class Record(Field):
         #I haven't find a better way to do it
         for i in self.phones:
             if i.value == phone:
-                i.change_value(new_phone)
+                self.phones.remove(i)
+                self.phones.append(Phone(new_phone))
                 return
         raise PhoneNotFoundError
     
@@ -75,23 +66,14 @@ class Record(Field):
         raise PhoneNotFoundError
 
 class AddressBook(UserDict):
-    def add_record(self, name, phones = ''):
+    def add_record(self, name, phone = ''):
         #if no record with this name exists - create a new one
         #if record already exists add the phone to the record
         #if record exists and list phones is empty - raises an exception
         if name in self.data:
-            if phones:
-                self.data[name].add_phone(phones)
+            if phone:
+                self.data[name].add_phone(phone)
             else:
                 raise RecordAlreadyExists
         else:
-            self.data[name] = Record(name, phones)
-    
-    def get_record(self, name):
-        #returns the record as a dictionary.
-        record = self.data[name]
-        return {"name": name,
-                "phones": record.phones}
-
-    def change_phone(self, name, old_phone, new_phone):
-        self.data[name].change_phone(old_phone, new_phone)
+            self.data[name] = Record(name, phone)
