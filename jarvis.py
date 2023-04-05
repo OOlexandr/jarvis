@@ -108,8 +108,16 @@ def handler_show_all(args):
     if not contacts:
         return "Contacts list is currently empty"
     message = "Here are all saved contacts:"
-    for c in contacts:
-        message += '\n' + handler_phone([c])
+    i = 1
+    for c_list in contacts:
+        message += f"\nPage {i}:"
+        i += 1
+        for c in c_list:
+            c_str = "\n" + c.name.value + ':'
+            for phone in c.phones:
+                c_str += " " + phone.value
+            message += c_str
+
     return message
 
 handlers = {"hello": handler_greetings,

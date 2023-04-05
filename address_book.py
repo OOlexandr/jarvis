@@ -113,6 +113,22 @@ class Record(Field):
         else:
             return None
 
+class ContactsIterator():
+    def __init__(self, contacts, N = 3):
+        self.contacts = contacts
+        self.N = N
+        self.current_index = 0
+    
+    def __next__(self):
+        if self.current_index < len(self.contacts):
+            start = self.current_index
+            page = []
+            for c in self.contacts[start: min(start+self.N, len(self.contacts))]:
+                page.append(c)
+                self.current_index += 1
+            return page
+        raise StopIteration
+        
 class AddressBook(UserDict):
     def add_record(self, name, phone = None, birthday = None):
         #only adds new records
@@ -120,3 +136,6 @@ class AddressBook(UserDict):
             raise RecordAlreadyExists
         else:
             self.data[name.value] = Record(name, phone, birthday)
+    
+    def __iter__(self):
+        return ContactsIterator(list(self.data.values()))
