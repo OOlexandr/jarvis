@@ -120,6 +120,20 @@ def handler_show_all(args):
 
     return message
 
+@error_handler
+def find(args):
+    records = contacts.find_records(args[0])
+    if records:
+        message = "Found contacts are:"
+        for r in records:
+            c_str = "\n" + r.name.value + ':'
+            for phone in r.phones:
+                c_str += " " + phone.value
+            message += c_str
+        return message
+    else:
+        return "No contacts were found"
+
 handlers = {"hello": handler_greetings,
             "good bye": handler_exit,
             "close": handler_exit,
@@ -130,7 +144,8 @@ handlers = {"hello": handler_greetings,
             "change": handler_change,
             "phone": handler_phone,
             "days to birthday": handler_days_to_birthday,
-            "show all": handler_show_all}
+            "show all": handler_show_all,
+            "find": find}
 #key - command, value - handler.
 
 #parcer
@@ -150,12 +165,14 @@ def parce(command):
     return None
 
 def main():
+    contacts.read_contacts()
     while True:
         command = parce(input())
         if command:
             result = command[0](command[1:])
             print(result)
             if result == "Good bye!":
+                contacts.save_contacts()
                 return
         else:
             print("unknown command")

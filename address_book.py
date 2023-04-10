@@ -1,6 +1,8 @@
 from collections import UserDict
 from datetime import date
+import copy
 import re
+import pickle
 
 class RecordAlreadyExists(Exception):
     pass
@@ -130,6 +132,8 @@ class ContactsIterator():
         raise StopIteration
         
 class AddressBook(UserDict):
+    save_file = "contacts.bin"
+
     def add_record(self, name, phone = None, birthday = None):
         #only adds new records
         if name.value in self.data:
@@ -139,3 +143,32 @@ class AddressBook(UserDict):
     
     def __iter__(self):
         return ContactsIterator(list(self.data.values()))
+    
+    def find_records(self, str = ""):
+        if str:
+            matches = []
+            for r in self.data:
+                if r.find(str) != -1:
+                    matches.append(self.data[r])
+                else:
+                    record = self.data[r]
+                    for p in record.phones:
+                        if p.value.find(str) != -1:
+                            matches.append(self.data[r])
+                            break
+            return matches
+
+        return None
+    
+    def save_contacts(self):
+        with open(self.save_file, "wb") as file:
+            pickle.dump(self.data, file)
+    
+    def read_contacts(self):
+        try:
+            with open(self.save_file, "rb") as file:
+                content = pickle.load(file)
+                if content:
+                    self.data = copy.deepcopy(content)
+        except:
+            pass
