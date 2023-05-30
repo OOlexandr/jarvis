@@ -34,6 +34,12 @@ class Field:
     def value(self, value):
         if self.is_valid(value):
             self.__value = value
+    
+    def __str__(self):
+        return str(self.value)
+    
+    def is_valid(self, value):
+        raise NotImplementedError
 
 class Name(Field):
     def is_valid(self, value):
@@ -114,6 +120,14 @@ class Record(Field):
             return (next_birthday - today).days
         else:
             return None
+    
+    def __str__(self):
+        s = f"Name: {self.name}, phones: "
+        if self.phones:
+            for number in self.phones[:-1]:
+                s = s + str(number) + ", "
+            return s + str(self.phones[-1]) + '\n'
+        return s
 
 class ContactsIterator():
     def __init__(self, contacts, N = 3):

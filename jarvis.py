@@ -87,10 +87,7 @@ def handler_phone(args):
     if len(args) < 1:
         raise NameNotGivenError
     contact = contacts[args[0]]
-    result = contact.name.value + ':'
-    for phone in contact.phones:
-        result += " " + phone.value
-    return result
+    return str(contact)
 
 @error_handler
 def handler_days_to_birthday(args):
@@ -113,10 +110,7 @@ def handler_show_all(args):
         message += f"\nPage {i}:"
         i += 1
         for c in c_list:
-            c_str = "\n" + c.name.value + ':'
-            for phone in c.phones:
-                c_str += " " + phone.value
-            message += c_str
+            message += str(c)
 
     return message
 
