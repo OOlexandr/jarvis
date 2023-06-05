@@ -1,5 +1,6 @@
 from collections import UserDict
 from datetime import date
+from abc import ABC, abstractmethod
 import copy
 import re
 import pickle
@@ -22,7 +23,7 @@ class InvalidNameError(Exception):
 class InvalidDateError(Exception):
     pass
 
-class Field:
+class Field(ABC):
     def __init__(self, value):
         self.value = value
     
@@ -38,8 +39,9 @@ class Field:
     def __str__(self):
         return str(self.value)
     
+    @abstractmethod
     def is_valid(self, value):
-        raise NotImplementedError
+        pass
 
 class Name(Field):
     def is_valid(self, value):
